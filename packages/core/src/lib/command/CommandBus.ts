@@ -37,6 +37,6 @@ export class CommandBus implements CommandBusContract {
       throw new CommandNotFoundException(command.commandName);
     }
 
-    return handler.execute<TResult>(command) as TResult;
+    return handler.execute(command) as TResult;
   }
 }

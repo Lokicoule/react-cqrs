@@ -8,7 +8,7 @@ export interface CommandHandlerContract<
   TCommand extends CommandContract,
   TResult = unknown
 > {
-  execute<TReturn>(command: TCommand): TResult | TReturn;
+  execute(command: TCommand): TResult;
 }
 
 export interface CommandBusContract {
