@@ -1,4 +1,4 @@
-import { CommandContract } from '../contracts/CommandContract';
+import { CommandContract } from '../contracts';
 
 export abstract class BaseCommand implements CommandContract {
   public static readonly commandName: string;
