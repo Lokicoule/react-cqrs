@@ -5,14 +5,14 @@ export interface CommandContract {
 }
 
 export interface CommandHandlerContract<
-  TCommand extends CommandContract,
+  TCommand extends CommandContract = CommandContract,
   TResult = unknown
 > {
   execute(command: TCommand): TResult;
 }
 
 export interface CommandBusContract {
-  register<TCommand extends CommandContract>(
+  register<TCommand extends CommandContract = CommandContract>(
     command: TCommand,
     handler: CommandHandlerContract<TCommand>
   ): Unsubscribe;

@@ -1,8 +1,12 @@
 import { CommandBus } from './CommandBus';
 import { CommandHandlerContract } from './contracts';
 import { CommandAlreadyRegisteredException } from './exceptions/CommandAlreadyRegisteredException';
-import { CommandNotFoundException } from './exceptions/CommandNotFoundException';
+import { CommandNotFoundException } from './exceptions';
 import { BaseCommand } from './models/BaseCommand';
+
+const simpleCommand = {
+  commandName: 'command:simple',
+};
 
 class SimpleCommand extends BaseCommand {
   public static override readonly commandName = 'command:simple';
@@ -48,6 +52,10 @@ class SyncHandlerForPayloadCommand
   }
 }
 
+function payloadCommandHandler(command: PayloadCommand): string {
+  return command.payload;
+}
+
 describe('CommandBus', () => {
   let commandBus: CommandBus;
 
@@ -56,7 +64,7 @@ describe('CommandBus', () => {
   });
 
   describe('register', () => {
-    it('should register async handler for command', () => {
+    it('should register an async handler for a command', () => {
       const unsubscribe = commandBus.register(
         new SimpleCommand(),
         new AsyncHandlerForSimpleCommand()
@@ -64,7 +72,7 @@ describe('CommandBus', () => {
       expect(unsubscribe).toBeInstanceOf(Function);
     });
 
-    it('should register sync handler for command', () => {
+    it('should register a sync handler for a command', () => {
       const unsubscribe = commandBus.register(
         new SimpleCommand(),
         new SyncHandlerForSimpleCommand()
@@ -72,7 +80,23 @@ describe('CommandBus', () => {
       expect(unsubscribe).toBeInstanceOf(Function);
     });
 
-    it('should throw CommandAlreadyRegisteredException when handler is already registered', () => {
+    it('should register a function as a handler for a command', () => {
+      const unsubscribe = commandBus.register(
+        new PayloadCommand('payload'),
+        payloadCommandHandler
+      );
+      expect(unsubscribe).toBeInstanceOf(Function);
+    });
+
+    it('should register an object as a command', () => {
+      const unsubscribe = commandBus.register(
+        simpleCommand,
+        new AsyncHandlerForSimpleCommand()
+      );
+      expect(unsubscribe).toBeInstanceOf(Function);
+    });
+
+    it('should throw CommandAlreadyRegisteredException when a handler is already registered', () => {
       commandBus.register(
         new SimpleCommand(),
         new AsyncHandlerForSimpleCommand()
@@ -87,25 +111,25 @@ describe('CommandBus', () => {
   });
 
   describe('execute', () => {
-    it('should execute async handler for command', async () => {
+    it('should execute an async handler for a command', async () => {
       commandBus.register(
         new SimpleCommand(),
         new AsyncHandlerForSimpleCommand()
       );
-      await expect(commandBus.execute(new SimpleCommand())).resolves.toBe(
-        undefined
-      );
+      await expect(
+        commandBus.execute(new SimpleCommand())
+      ).resolves.toBeUndefined();
     });
 
-    it('should execute sync handler for command', () => {
+    it('should execute a sync handler for a command', () => {
       commandBus.register(
         new SimpleCommand(),
         new SyncHandlerForSimpleCommand()
       );
-      expect(commandBus.execute(new SimpleCommand())).toBe(undefined);
+      expect(commandBus.execute(new SimpleCommand())).toBeUndefined();
     });
 
-    it('should execute async handler for command with payload', async () => {
+    it('should execute an async handler for a command with payload', async () => {
       commandBus.register(
         new PayloadCommand('payload'),
         new AsyncHandlerForPayloadCommand()
@@ -115,7 +139,7 @@ describe('CommandBus', () => {
       ).resolves.toBe('payload');
     });
 
-    it('should execute sync handler for command with payload', () => {
+    it('should execute a sync handler for a command with payload', () => {
       commandBus.register(
         new PayloadCommand('payload'),
         new SyncHandlerForPayloadCommand()
@@ -123,7 +147,7 @@ describe('CommandBus', () => {
       expect(commandBus.execute(new PayloadCommand('payload'))).toBe('payload');
     });
 
-    it('should throw CommandNotFoundException when handler is not registered', () => {
+    it('should throw CommandNotFoundException when a handler is not registered', () => {
       expect(() =>
         commandBus.execute(new SimpleCommand())
       ).toThrowErrorMatchingSnapshot();
@@ -131,7 +155,7 @@ describe('CommandBus', () => {
   });
 
   describe('unregister', () => {
-    it('should unregister handler', () => {
+    it('should unregister a handler', () => {
       const unsubscribe = commandBus.register(
         new SimpleCommand(),
         new AsyncHandlerForSimpleCommand()
@@ -142,7 +166,7 @@ describe('CommandBus', () => {
       );
     });
 
-    it('should not throw when handler is not registered', () => {
+    it('should not throw when a handler is not registered', () => {
       const unsubscribe = commandBus.register(
         new SimpleCommand(),
         new AsyncHandlerForSimpleCommand()
