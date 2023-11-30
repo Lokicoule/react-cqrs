@@ -7,7 +7,8 @@ export class Registry implements RegistryContract {
   private dependencies: Map<string, RegistryEntry> = new Map();
 
   public register<T>(token: string, provider: Provider<T>): void {
-    this.dependencies.set(token, { provider });
+    const instance = this.createInstance(provider);
+    this.dependencies.set(token, { provider, instance });
   }
 
   public resolve<T>(token: string): T {
@@ -15,10 +16,6 @@ export class Registry implements RegistryContract {
 
     if (!entry) {
       throw new DependencyNotFoundException(token);
-    }
-
-    if (!entry.instance) {
-      entry.instance = this.createInstance(entry.provider);
     }
 
     return entry.instance as T;
