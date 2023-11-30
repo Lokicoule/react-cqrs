@@ -15,7 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@react-cqrs/core": ["packages/core/src/index.ts"]
+      "@react-cqrs/core": ["packages/core/src/index.ts"],
+      "@react-cqrs/ioc": ["packages/ioc/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
