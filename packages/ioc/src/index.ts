@@ -1,1 +1,1 @@
-export * from './lib/io-c';
+export * from './lib/IocContainer';
