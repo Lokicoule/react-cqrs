@@ -1,4 +1,4 @@
-import { Unsubscribe } from '../types';
+import { Unsubscribe } from '../shared/types';
 import { QueryBusContract, QueryContract } from './contracts';
 import {
   QueryAlreadyRegisteredException,

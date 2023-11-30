@@ -1,4 +1,4 @@
-import { Unsubscribe } from '../types';
+import { Unsubscribe } from '../shared/types';
 import { EventBusContract, EventContract } from './contracts';
 import { EventNotFoundException } from './exceptions';
 import { EventHandler } from './types';

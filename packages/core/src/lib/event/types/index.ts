@@ -1,4 +1,4 @@
-import { Either } from '../../types';
+import { Either } from '../../shared/types';
 import { EventContract, EventHandlerContract } from '../contracts';
 
 /**

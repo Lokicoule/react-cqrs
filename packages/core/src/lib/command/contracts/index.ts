@@ -1,4 +1,4 @@
-import { Unsubscribe } from '../../types';
+import { Unsubscribe } from '../../shared/types';
 
 /**
  * @name CommandContract
