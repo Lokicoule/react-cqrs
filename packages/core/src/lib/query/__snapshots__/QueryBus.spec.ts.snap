@@ -1,3 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`QueryBus execute should throw QueryNotFoundException when a handler is not registered 1`] = `"Query handler for query:simple not found"`;

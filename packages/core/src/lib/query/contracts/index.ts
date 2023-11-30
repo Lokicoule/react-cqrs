@@ -1,9 +1,17 @@
 import { Unsubscribe } from '../../types';
 
+/**
+ * @name QueryContract
+ * @property queryName - The identifier of the query used to register the query handler.
+ */
 export interface QueryContract {
   readonly queryName: string;
 }
 
+/**
+ * @name QueryHandlerContract
+ * @method execute - Executes the query handler.
+ */
 export interface QueryHandlerContract<
   TQuery extends QueryContract = QueryContract,
   TResult = unknown
@@ -11,6 +19,11 @@ export interface QueryHandlerContract<
   execute(query: TQuery): TResult;
 }
 
+/**
+ * @name QueryBusContract
+ * @method register - Registers a query handler for a query.
+ * @method execute - Executes the query handler for a query.
+ */
 export interface QueryBusContract {
   register<TQuery extends QueryContract = QueryContract>(
     query: TQuery,
