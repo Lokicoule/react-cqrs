@@ -16,6 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@react-cqrs/core": ["packages/core/src/index.ts"],
+      "@react-cqrs/cqrs": ["packages/cqrs/src/index.ts"],
       "@react-cqrs/ioc": ["packages/ioc/src/index.ts"]
     }
   },
