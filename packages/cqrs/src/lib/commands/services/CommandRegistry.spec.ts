@@ -1,11 +1,11 @@
-import { Unsubscribe } from '../types';
+import { Callback } from '../../types';
 import CommandRegistry from './CommandRegistry';
-import { CommandRegistryEntry } from './contracts';
+import { CommandRegistryEntry } from '../contracts';
 import {
   CommandAlreadyRegisteredException,
   CommandNotFoundException,
-} from './exceptions';
-import { BaseCommand } from './models';
+} from '../exceptions';
+import { BaseCommand } from '../models';
 
 class TestCommand extends BaseCommand {
   public static override readonly commandName = 'test';
@@ -16,7 +16,7 @@ describe('CommandRegistry', () => {
   let handler: jest.Mock;
   let command: TestCommand = new TestCommand(); // Fix: We need to instantiate the command here because when using it.each, the command is not yet instantiated and the commandName is undefined.
   let entry: CommandRegistryEntry;
-  let unsubscribe: Unsubscribe;
+  let Callback: Callback;
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -24,11 +24,11 @@ describe('CommandRegistry', () => {
     handler = jest.fn();
     command = new TestCommand();
     entry = { handler };
-    unsubscribe = registry.register(command, entry);
+    Callback = registry.register(command, entry);
   });
 
   afterEach(() => {
-    unsubscribe();
+    Callback();
   });
 
   describe('register', () => {

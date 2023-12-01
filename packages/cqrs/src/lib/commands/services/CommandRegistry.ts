@@ -1,11 +1,11 @@
 import {
   CommandAlreadyRegisteredException,
   CommandNotFoundException,
-} from './exceptions';
-import { BaseRegistry } from '../registry';
-import { Unsubscribe } from '../types';
-import { CommandContract } from './contracts';
-import { CommandRegistryContract, CommandRegistryEntry } from './contracts';
+} from '../exceptions';
+import { BaseRegistry } from '../../registry';
+import { Callback } from '../../types';
+import { CommandContract } from '../contracts';
+import { CommandRegistryContract, CommandRegistryEntry } from '../contracts';
 
 export default class CommandRegistry<
     TCommand extends CommandContract = CommandContract,
@@ -17,7 +17,7 @@ export default class CommandRegistry<
   public register(
     command: TCommand,
     entry: CommandRegistryEntry<TResult>
-  ): Unsubscribe {
+  ): Callback {
     if (this.has(command.commandName)) {
       throw new CommandAlreadyRegisteredException(command.commandName);
     }

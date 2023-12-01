@@ -1,9 +1,10 @@
-import { CommandBus } from './CommandBus';
+import { Observer } from '../observables';
+import CommandBus from './CommandBus';
 import { CommandHandlerEntity } from './contracts';
 import {
   CommandAlreadyRegisteredException,
-  UnsupportedCommandHandlerException,
   CommandNotFoundException,
+  UnsupportedCommandHandlerException,
 } from './exceptions';
 import { BaseCommand } from './models';
 
@@ -11,7 +12,7 @@ class Command extends BaseCommand {
   public static override readonly commandName = 'Command';
 }
 
-describe('CommandBus', () => {
+describe('commandBus', () => {
   let commandBus: CommandBus;
 
   beforeEach(() => {
@@ -23,11 +24,11 @@ describe('CommandBus', () => {
       const command = new Command();
       const handler = jest.fn();
 
-      const unsubscribe = commandBus.register(command, handler);
+      const Callback = commandBus.register(command, handler);
 
       expect(commandBus.execute(command)).toBeUndefined();
 
-      unsubscribe();
+      Callback();
 
       expect(() => commandBus.execute(command)).toThrow(
         CommandNotFoundException
@@ -75,6 +76,61 @@ describe('CommandBus', () => {
       expect(() => commandBus.execute(command)).toThrow(
         UnsupportedCommandHandlerException
       );
+    });
+  });
+
+  describe('publish', () => {
+    it('should not publish a command to subscribers when we do not execute it', () => {
+      const command = new Command();
+      const handler = jest.fn();
+      const subscriber = jest.fn();
+
+      commandBus.subscribe(
+        new Observer((receivedCommand) => {
+          expect(receivedCommand).toBe(command);
+          subscriber();
+        })
+      );
+
+      commandBus.register(command, handler);
+
+      expect(subscriber).not.toHaveBeenCalled();
+      expect(handler).not.toHaveBeenCalledWith(command);
+    });
+
+    it('should publish a command to subscribers', () => {
+      const command = new Command();
+      const handler = jest.fn();
+      const subscriber = jest.fn();
+      const subscriber2 = jest.fn();
+      const subscriber3 = jest.fn();
+
+      commandBus.subscribe(
+        new Observer((receivedCommand) => {
+          expect(receivedCommand).toBe(command);
+          subscriber();
+        })
+      );
+      commandBus.subscribe(
+        new Observer((receivedCommand) => {
+          expect(receivedCommand).toBe(command);
+          subscriber2();
+        })
+      );
+      commandBus.subscribe(
+        new Observer((receivedCommand) => {
+          expect(receivedCommand).toBe(command);
+          subscriber3();
+        })
+      );
+
+      commandBus.register(command, handler);
+      commandBus.execute(command);
+
+      expect(subscriber).toHaveBeenCalled();
+      expect(subscriber2).toHaveBeenCalled();
+      expect(subscriber3).toHaveBeenCalled();
+      expect(handler).toHaveBeenCalledWith(command);
     });
   });
 });

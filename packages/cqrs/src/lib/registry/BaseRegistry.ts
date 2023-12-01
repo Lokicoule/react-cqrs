@@ -1,4 +1,4 @@
-import { Unsubscribe } from '../types';
+import { Callback } from '../types';
 import { RegistryContract } from './contracts';
 
 export default abstract class BaseRegistry<Key, Value>
@@ -6,7 +6,7 @@ export default abstract class BaseRegistry<Key, Value>
 {
   private readonly handlers = new Map<Key, Value>();
 
-  public set(key: Key, value: Value): Unsubscribe {
+  public set(key: Key, value: Value): Callback {
     this.handlers.set(key, value);
 
     return () => {

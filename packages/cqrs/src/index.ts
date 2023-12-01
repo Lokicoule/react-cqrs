@@ -1,1 +1,1 @@
-export * from './lib/cqrs';
+export * from './lib/commands';

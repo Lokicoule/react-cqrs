@@ -13,12 +13,12 @@ describe('BaseRegistry', () => {
   });
 
   it('should register a value', () => {
-    const unsubscribe = registry.set('key', 'value');
+    const Callback = registry.set('key', 'value');
 
     expect(registry.size).toBe(1);
     expect(registry.get('key')).toBe('value');
 
-    unsubscribe();
+    Callback();
 
     expect(registry.size).toBe(0);
     expect(registry.get('key')).toBeUndefined();

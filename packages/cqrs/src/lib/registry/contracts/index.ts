@@ -1,7 +1,7 @@
-import { Unsubscribe } from '../../types';
+import { Callback } from '../../types';
 
 export interface RegistryContract<Key, Value> {
-  set(key: Key, value: Value): Unsubscribe;
+  set(key: Key, value: Value): Callback;
   get(key: Key): Value | undefined;
   has(key: Key): boolean;
   clear(): void;

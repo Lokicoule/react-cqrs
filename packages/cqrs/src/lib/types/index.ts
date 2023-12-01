@@ -1,1 +1,1 @@
-export type Unsubscribe = () => void;
+export type Callback = () => void;

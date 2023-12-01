@@ -1,5 +1,5 @@
-import { Unsubscribe } from '../types';
-import CommandRegistry from './CommandRegistry';
+import { ObservableBus } from '../observables';
+import { Callback } from '../types';
 import {
   CommandContract,
   CommandHandlerEntity,
@@ -8,21 +8,22 @@ import {
   isCommandHandlerFn,
 } from './contracts';
 import UnsupportedCommandHandlerException from './exceptions/UnsupportedCommandHandlerException';
+import { CommandRegistry } from './services';
 
-export class CommandBus {
-  private readonly registry: CommandRegistryContract<
-    CommandContract,
-    CommandHandlerEntity
-  >;
-
-  constructor() {
-    this.registry = new CommandRegistry();
+export default class CommandBus extends ObservableBus<CommandContract> {
+  constructor(
+    private readonly registry: CommandRegistryContract<
+      CommandContract,
+      CommandHandlerEntity
+    > = new CommandRegistry()
+  ) {
+    super();
   }
 
   public register<TCommand extends CommandContract>(
     command: TCommand,
     handler: CommandHandlerEntity
-  ): Unsubscribe {
+  ): Callback {
     return this.registry.register(command, { handler });
   }
 
@@ -31,14 +32,17 @@ export class CommandBus {
   ): TResult {
     const handler = this.registry.resolve(command);
 
+    let result: TResult;
     if (isCommandHandlerContract<TCommand>(handler)) {
-      return handler.execute(command);
+      result = handler.execute<TResult>(command);
+    } else if (isCommandHandlerFn<TCommand>(handler)) {
+      result = handler<TResult>(command);
+    } else {
+      throw new UnsupportedCommandHandlerException(command.commandName);
     }
 
-    if (isCommandHandlerFn<TCommand>(handler)) {
-      return handler(command);
-    }
+    this.publish(command);
 
-    throw new UnsupportedCommandHandlerException(command.commandName);
+    return result;
   }
 }
