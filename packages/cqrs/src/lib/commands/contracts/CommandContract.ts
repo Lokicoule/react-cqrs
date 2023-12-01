@@ -2,7 +2,7 @@
  * @name CommandContract
  * @property commandName - The identifier of the command used to register the command handler.
  */
-export interface CommandContract {
+export default interface CommandContract {
   readonly commandName: string;
 }
 

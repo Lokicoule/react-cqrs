@@ -1,4 +1,4 @@
-import { CommandContract, isCommandContract } from './command.contract';
+import CommandContract, { isCommandContract } from './CommandContract';
 
 describe('CommandContract', () => {
   describe('isCommandContract', () => {
