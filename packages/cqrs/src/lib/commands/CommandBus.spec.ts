@@ -1,4 +1,3 @@
-import { Observer } from '../observables';
 import CommandBus from './CommandBus';
 import { CommandHandlerEntity } from './contracts';
 import {
@@ -85,12 +84,12 @@ describe('commandBus', () => {
       const handler = jest.fn();
       const subscriber = jest.fn();
 
-      commandBus.subscribe(
-        new Observer((receivedCommand) => {
+      commandBus.subscribe({
+        next: (receivedCommand) => {
           expect(receivedCommand).toBe(command);
           subscriber();
-        })
-      );
+        },
+      });
 
       commandBus.register(command, handler);
 
@@ -101,36 +100,63 @@ describe('commandBus', () => {
     it('should publish a command to subscribers', () => {
       const command = new Command();
       const handler = jest.fn();
-      const subscriber = jest.fn();
-      const subscriber2 = jest.fn();
-      const subscriber3 = jest.fn();
 
-      commandBus.subscribe(
-        new Observer((receivedCommand) => {
-          expect(receivedCommand).toBe(command);
-          subscriber();
-        })
-      );
-      commandBus.subscribe(
-        new Observer((receivedCommand) => {
-          expect(receivedCommand).toBe(command);
-          subscriber2();
-        })
-      );
-      commandBus.subscribe(
-        new Observer((receivedCommand) => {
-          expect(receivedCommand).toBe(command);
-          subscriber3();
-        })
-      );
+      const observer = {
+        next: jest.fn(),
+      };
+      const observer2 = {
+        next: jest.fn(),
+      };
+      const observer3 = {
+        next: jest.fn(),
+      };
+
+      commandBus.subscribe(observer);
+      commandBus.subscribe(observer2);
+      commandBus.subscribe(observer3);
 
       commandBus.register(command, handler);
-      commandBus.execute(command);
+      commandBus.publish(command);
 
-      expect(subscriber).toHaveBeenCalled();
-      expect(subscriber2).toHaveBeenCalled();
-      expect(subscriber3).toHaveBeenCalled();
       expect(handler).toHaveBeenCalledWith(command);
+      expect(observer.next).toHaveBeenCalledWith(command);
+      expect(observer2.next).toHaveBeenCalledWith(command);
+      expect(observer3.next).toHaveBeenCalledWith(command);
+      expect(observer.next).toHaveBeenCalledTimes(1);
+      expect(observer2.next).toHaveBeenCalledTimes(1);
+      expect(observer3.next).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('options', () => {
+    it('should be possible to publish with error and not throw', () => {
+      commandBus = new CommandBus({ throwError: false });
+
+      const result = commandBus.publish(new Command());
+
+      expect(result).toBeUndefined();
+    });
+
+    it('should be possible to publish with error and throw', () => {
+      commandBus = new CommandBus({ throwError: true });
+      expect(() => commandBus.publish(new Command())).toThrow(
+        CommandNotFoundException
+      );
+    });
+
+    it('should be possible to publish with complete', () => {
+      commandBus = new CommandBus({ throwError: false });
+
+      const observer = {
+        next: jest.fn(),
+        complete: jest.fn(),
+      };
+
+      commandBus.subscribe(observer);
+
+      commandBus.publish(new Command());
+
+      expect(observer.complete).toHaveBeenCalled();
     });
   });
 });

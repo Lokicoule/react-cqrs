@@ -1,4 +1,5 @@
 import { ObservableBus } from '../observables';
+import { ObservableBusOptions } from '../observables/ObservableBus';
 import { Callback } from '../types';
 import {
   CommandContract,
@@ -12,12 +13,13 @@ import { CommandRegistry } from './services';
 
 export default class CommandBus extends ObservableBus<CommandContract> {
   constructor(
+    options?: ObservableBusOptions,
     private readonly registry: CommandRegistryContract<
       CommandContract,
       CommandHandlerEntity
     > = new CommandRegistry()
   ) {
-    super();
+    super(options);
   }
 
   public register<TCommand extends CommandContract>(
@@ -40,8 +42,6 @@ export default class CommandBus extends ObservableBus<CommandContract> {
     } else {
       throw new UnsupportedCommandHandlerException(command.commandName);
     }
-
-    this.publish(command);
 
     return result;
   }
