@@ -1,47 +1,99 @@
 import ObservableBus from './ObservableBus';
-import Observer from './Observer';
-
-class TestBus extends ObservableBus {}
 
 describe('ObservableBus', () => {
-  describe('subscribe', () => {
-    it('should return a callback', () => {
-      const bus = new TestBus();
-      const observer = new Observer(() => {});
+  it('should be possible to subscribe', () => {
+    const bus = new (class extends ObservableBus {
+      protected execute<TResult>(): TResult {
+        return {} as TResult;
+      }
+    })();
 
-      const callback = bus.subscribe(observer);
+    const observer = {
+      next: jest.fn(),
+    };
 
-      expect(callback).toBeInstanceOf(Function);
-    });
+    bus.subscribe(observer);
 
-    it('should return a callback that removes the observer when called', () => {
-      const bus = new TestBus();
+    bus.publish('foo');
 
-      const callback = bus.subscribe(new Observer(() => {}));
-      const callback2 = bus.subscribe(new Observer(() => {}));
-
-      expect(bus['publisher']['observers'].size).toBe(2);
-
-      callback();
-
-      expect(bus['publisher']['observers'].size).toBe(1);
-
-      callback2();
-
-      expect(bus['publisher']['observers'].size).toBe(0);
-    });
+    expect(observer.next).toHaveBeenCalledWith('foo');
   });
 
-  describe('publish', () => {
-    it('should call next on the publisher', () => {
-      const bus = new TestBus();
-      const observer = new Observer(() => {});
-      const spy = jest.spyOn(bus['publisher'], 'next');
+  it('should be possible to publish', () => {
+    const bus = new (class extends ObservableBus {
+      protected execute<TResult>(): TResult {
+        return {} as TResult;
+      }
+    })();
 
-      bus.subscribe(observer);
-      bus.publish({});
+    const result = bus.publish('foo');
 
-      expect(spy).toHaveBeenCalled();
-    });
+    expect(result).toEqual({});
+  });
+
+  it('should be possible to publish with error and throw', () => {
+    const bus = new (class extends ObservableBus {
+      protected execute<TResult>(): TResult {
+        throw new Error('foo');
+      }
+    })({ throwError: true });
+
+    expect(() => bus.publish('foo')).toThrow('foo');
+  });
+
+  it('should be possible to publish with error and not throw', () => {
+    const bus = new (class extends ObservableBus {
+      protected execute<TResult>(): TResult {
+        throw new Error('foo');
+      }
+    })({ throwError: false });
+
+    const result = bus.publish('foo');
+
+    expect(result).toBeUndefined();
+  });
+
+  it('should be possible to publish with next', () => {
+    const bus = new (class extends ObservableBus {
+      protected execute<TResult>(): TResult {
+        return {} as TResult;
+      }
+    })();
+
+    const observer = {
+      next: jest.fn(),
+    };
+    const observer2 = {
+      next: jest.fn(),
+    };
+
+    bus.subscribe(observer);
+    bus.subscribe(observer2);
+
+    bus.publish('foo');
+
+    expect(observer.next).toHaveBeenCalledWith('foo');
+    expect(observer.next).toHaveBeenCalledTimes(1);
+    expect(observer2.next).toHaveBeenCalledWith('foo');
+    expect(observer2.next).toHaveBeenCalledTimes(1);
+  });
+
+  it('should be possible to publish with complete', () => {
+    const bus = new (class extends ObservableBus {
+      protected execute<TResult>(): TResult {
+        return {} as TResult;
+      }
+    })();
+
+    const observer = {
+      next: jest.fn(),
+      complete: jest.fn(),
+    };
+
+    bus.subscribe(observer);
+
+    bus.publish('foo');
+
+    expect(observer.complete).toHaveBeenCalledTimes(1);
   });
 });

@@ -1,7 +1,5 @@
-export default class Observer<T> {
-  constructor(private readonly callback: (value: T) => void) {}
-
-  public next(value: T): void {
-    this.callback(value);
-  }
-}
+export type Observer<T> = {
+  next: (value: T) => void;
+  error?: (error: Error) => void;
+  complete?: () => void;
+};

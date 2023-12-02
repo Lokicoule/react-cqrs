@@ -1,66 +1,91 @@
-import Observer from './Observer';
-import Subject from './Subject';
+import Observable from './Observable';
+
+export default class Subject<T> extends Observable<T> {
+  constructor() {
+    super((observer) => {
+      this.observers.add(observer);
+    });
+  }
+
+  public next(value: T) {
+    this.observers.forEach((observer) => observer.next(value));
+  }
+
+  public complete() {
+    this.observers.forEach((observer) => observer.complete?.());
+  }
+
+  public error(error: Error) {
+    this.observers.forEach((observer) => observer.error?.(error));
+  }
+
+  public asObservable(): Observable<T> {
+    return Observable.create((observer) => {
+      const subscription = this.subscribe(observer);
+
+      return () => {
+        subscription.unsubscribe();
+      };
+    });
+  }
+}
 
 describe('Subject', () => {
-  describe('subscribe', () => {
-    it('should return a function', () => {
-      const subject = new Subject();
+  it('should be possible to publish', () => {
+    const subject = new Subject<string>();
 
-      const subscription = subject.subscribe(new Observer(() => {}));
+    const observer = {
+      next: jest.fn(),
+    };
 
-      expect(subscription).toBeDefined();
-      expect(typeof subscription).toBe('function');
-    });
+    subject.subscribe(observer);
 
-    it('should add the observer to the observers set', () => {
-      const subject = new Subject();
-      const observer = new Observer(() => {});
+    subject.next('foo');
 
-      subject.subscribe(observer);
-
-      expect(subject['observers'].has(observer)).toBe(true);
-    });
-
-    it('should return a function that removes the observer from the observers set', () => {
-      const subject = new Subject();
-      const observer = new Observer(() => {});
-
-      const unsubscription = subject.subscribe(observer);
-
-      unsubscription();
-
-      expect(subject['observers'].has(observer)).toBe(false);
-    });
+    expect(observer.next).toHaveBeenCalledWith('foo');
   });
 
-  describe('next', () => {
-    it('should be defined', () => {
-      const subject = new Subject();
+  it('should be possible to complete', () => {
+    const subject = new Subject<string>();
 
-      expect(subject.next).toBeDefined();
-    });
+    const observer = {
+      next: jest.fn(),
+      complete: jest.fn(),
+    };
 
-    it('should call the next method on each observer', () => {
-      const subject = new Subject();
-      const observer1 = new Observer(() => {});
-      const observer2 = new Observer(() => {});
-      const observer3 = new Observer(() => {});
-      const spy1 = jest.spyOn(observer1, 'next');
-      const spy2 = jest.spyOn(observer2, 'next');
-      const spy3 = jest.spyOn(observer3, 'next');
+    subject.subscribe(observer);
 
-      subject.subscribe(observer1);
-      subject.subscribe(observer2);
-      subject.subscribe(observer3);
+    subject.complete();
 
-      subject.next('test');
+    expect(observer.complete).toHaveBeenCalled();
+  });
 
-      expect(spy1).toHaveBeenCalledTimes(1);
-      expect(spy1).toHaveBeenCalledWith('test');
-      expect(spy2).toHaveBeenCalledTimes(1);
-      expect(spy2).toHaveBeenCalledWith('test');
-      expect(spy3).toHaveBeenCalledTimes(1);
-      expect(spy3).toHaveBeenCalledWith('test');
-    });
+  it('should be possible to error', () => {
+    const subject = new Subject<string>();
+
+    const observer = {
+      next: jest.fn(),
+      error: jest.fn(),
+    };
+
+    subject.subscribe(observer);
+
+    subject.error(new Error('foo'));
+
+    expect(observer.error).toHaveBeenCalledWith(new Error('foo'));
+  });
+
+  it('should be possible to convert to observable', () => {
+    const subject = new Subject<string>();
+
+    const observer = {
+      next: jest.fn(),
+    };
+
+    subject.asObservable().subscribe(observer);
+
+    subject.next('foo');
+
+    expect(observer.next).toHaveBeenCalledWith('foo');
   });
 });
