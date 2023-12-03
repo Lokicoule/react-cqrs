@@ -1,4 +1,5 @@
 import { ObservableBus } from '../observables';
+import { ObservableBusOptions } from '../observables/ObservableBus';
 import { Callback } from '../types';
 import {
   QueryContract,
@@ -12,12 +13,13 @@ import { QueryRegistry } from './services';
 
 export default class QueryBus extends ObservableBus<QueryContract> {
   constructor(
+    options?: ObservableBusOptions,
     private readonly registry: QueryRegistryContract<
       QueryContract,
       QueryHandlerEntity
     > = new QueryRegistry()
   ) {
-    super();
+    super(options);
   }
 
   public register<TQuery extends QueryContract>(
@@ -40,8 +42,6 @@ export default class QueryBus extends ObservableBus<QueryContract> {
     } else {
       throw new UnsupportedQueryHandlerException(query.queryName);
     }
-
-    this.publish(query);
 
     return result;
   }

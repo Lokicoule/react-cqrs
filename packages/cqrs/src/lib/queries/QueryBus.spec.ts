@@ -1,4 +1,3 @@
-import { Observer } from '../observables';
 import QueryBus from './QueryBus';
 import { QueryHandlerEntity } from './contracts';
 import {
@@ -81,12 +80,12 @@ describe('queryBus', () => {
       const handler = jest.fn();
       const subscriber = jest.fn();
 
-      queryBus.subscribe(
-        new Observer((receivedQuery) => {
+      queryBus.subscribe({
+        next: (receivedQuery) => {
           expect(receivedQuery).toBe(query);
           subscriber();
-        })
-      );
+        },
+      });
 
       queryBus.register(query, handler);
 
@@ -97,36 +96,63 @@ describe('queryBus', () => {
     it('should publish a query to subscribers', () => {
       const query = new Query();
       const handler = jest.fn();
-      const subscriber = jest.fn();
-      const subscriber2 = jest.fn();
-      const subscriber3 = jest.fn();
 
-      queryBus.subscribe(
-        new Observer((receivedQuery) => {
-          expect(receivedQuery).toBe(query);
-          subscriber();
-        })
-      );
-      queryBus.subscribe(
-        new Observer((receivedQuery) => {
-          expect(receivedQuery).toBe(query);
-          subscriber2();
-        })
-      );
-      queryBus.subscribe(
-        new Observer((receivedQuery) => {
-          expect(receivedQuery).toBe(query);
-          subscriber3();
-        })
-      );
+      const observer = {
+        next: jest.fn(),
+      };
+      const observer2 = {
+        next: jest.fn(),
+      };
+      const observer3 = {
+        next: jest.fn(),
+      };
+
+      queryBus.subscribe(observer);
+      queryBus.subscribe(observer2);
+      queryBus.subscribe(observer3);
 
       queryBus.register(query, handler);
-      queryBus.execute(query);
+      queryBus.publish(query);
 
-      expect(subscriber).toHaveBeenCalled();
-      expect(subscriber2).toHaveBeenCalled();
-      expect(subscriber3).toHaveBeenCalled();
       expect(handler).toHaveBeenCalledWith(query);
+      expect(observer.next).toHaveBeenCalledWith(query);
+      expect(observer2.next).toHaveBeenCalledWith(query);
+      expect(observer3.next).toHaveBeenCalledWith(query);
+      expect(observer.next).toHaveBeenCalledTimes(1);
+      expect(observer2.next).toHaveBeenCalledTimes(1);
+      expect(observer3.next).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('options', () => {
+    it('should be possible to publish with error and not throw', () => {
+      queryBus = new QueryBus({ throwError: false });
+
+      const result = queryBus.publish(new Query());
+
+      expect(result).toBeUndefined();
+    });
+
+    it('should be possible to publish with error and throw', () => {
+      queryBus = new QueryBus({ throwError: true });
+      expect(() => queryBus.publish(new Query())).toThrow(
+        QueryNotFoundException
+      );
+    });
+
+    it('should be possible to publish with complete', () => {
+      queryBus = new QueryBus({ throwError: false });
+
+      const observer = {
+        next: jest.fn(),
+        complete: jest.fn(),
+      };
+
+      queryBus.subscribe(observer);
+
+      queryBus.publish(new Query());
+
+      expect(observer.complete).toHaveBeenCalled();
     });
   });
 });
