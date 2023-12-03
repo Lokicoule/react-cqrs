@@ -28,6 +28,10 @@ export default abstract class BaseRegistry<Key, Value>
     this.handlers.clear();
   }
 
+  public delete(key: Key): boolean {
+    return this.handlers.delete(key);
+  }
+
   public get size(): number {
     return this.handlers.size;
   }

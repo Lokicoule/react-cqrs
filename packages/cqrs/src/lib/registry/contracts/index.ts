@@ -5,6 +5,7 @@ export interface RegistryContract<Key, Value> {
   get(key: Key): Value | undefined;
   has(key: Key): boolean;
   clear(): void;
+  delete(key: Key): boolean;
   readonly size: number;
   readonly keys: IterableIterator<Key>;
   readonly values: IterableIterator<Value>;
