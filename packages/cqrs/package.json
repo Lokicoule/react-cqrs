@@ -1,6 +1,9 @@
 {
   "name": "@react-cqrs/cqrs",
   "version": "0.0.1",
+  "scripts": {
+    "test": "jest"
+  },
   "dependencies": {
     "tslib": "^2.3.0"
   },
