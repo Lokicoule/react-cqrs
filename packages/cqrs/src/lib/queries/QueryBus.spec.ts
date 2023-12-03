@@ -115,9 +115,15 @@ describe('queryBus', () => {
       queryBus.publish(query);
 
       expect(handler).toHaveBeenCalledWith(query);
-      expect(observer.next).toHaveBeenCalledWith(query);
-      expect(observer2.next).toHaveBeenCalledWith(query);
-      expect(observer3.next).toHaveBeenCalledWith(query);
+      expect(observer.next).toHaveBeenCalledWith({
+        param: query,
+      });
+      expect(observer2.next).toHaveBeenCalledWith({
+        param: query,
+      });
+      expect(observer3.next).toHaveBeenCalledWith({
+        param: query,
+      });
       expect(observer.next).toHaveBeenCalledTimes(1);
       expect(observer2.next).toHaveBeenCalledTimes(1);
       expect(observer3.next).toHaveBeenCalledTimes(1);

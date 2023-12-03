@@ -1,4 +1,9 @@
 import Observable from './Observable';
+import {
+  ObserverCompleteProps,
+  ObserverErrorProps,
+  ObserverNextProps,
+} from './Observer';
 
 export default class Subject<T> extends Observable<T> {
   constructor() {
@@ -7,16 +12,16 @@ export default class Subject<T> extends Observable<T> {
     });
   }
 
-  public next(value: T) {
-    this.observers.forEach((observer) => observer.next(value));
+  public next<TValue>(props: ObserverNextProps<T, TValue>) {
+    this.observers.forEach((observer) => observer.next?.(props));
   }
 
-  public complete() {
-    this.observers.forEach((observer) => observer.complete?.());
+  public complete(props?: ObserverCompleteProps<T>) {
+    this.observers.forEach((observer) => observer.complete?.(props));
   }
 
-  public error(error: Error) {
-    this.observers.forEach((observer) => observer.error?.(error));
+  public error(props: ObserverErrorProps<T>) {
+    this.observers.forEach((observer) => observer.error?.(props));
   }
 
   public asObservable(): Observable<T> {

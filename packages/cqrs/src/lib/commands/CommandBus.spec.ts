@@ -119,9 +119,15 @@ describe('commandBus', () => {
       commandBus.publish(command);
 
       expect(handler).toHaveBeenCalledWith(command);
-      expect(observer.next).toHaveBeenCalledWith(command);
-      expect(observer2.next).toHaveBeenCalledWith(command);
-      expect(observer3.next).toHaveBeenCalledWith(command);
+      expect(observer.next).toHaveBeenCalledWith({
+        param: command,
+      });
+      expect(observer2.next).toHaveBeenCalledWith({
+        param: command,
+      });
+      expect(observer3.next).toHaveBeenCalledWith({
+        param: command,
+      });
       expect(observer.next).toHaveBeenCalledTimes(1);
       expect(observer2.next).toHaveBeenCalledTimes(1);
       expect(observer3.next).toHaveBeenCalledTimes(1);

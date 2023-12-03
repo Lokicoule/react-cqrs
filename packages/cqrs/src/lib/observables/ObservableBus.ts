@@ -18,18 +18,23 @@ export default abstract class ObservableBus<T = unknown> {
   public publish<TResult>(command: T): TResult | undefined {
     try {
       const result = this.execute<TResult>(command);
-      this.publisher.next(command);
+      this.publisher.next({ value: result, param: command });
 
       return result;
     } catch (error) {
-      if (error instanceof Error) this.publisher.error(error);
+      if (error instanceof Error)
+        this.publisher.error({
+          error,
+          param: command,
+        });
       if (this.options.throwError) throw error;
     } finally {
-      this.publisher.complete();
+      this.publisher.complete({ param: command });
     }
 
     return undefined;
   }
 
   protected abstract execute<TResult>(command: T): TResult;
+  protected abstract execute(command: T): void | Promise<void>;
 }

@@ -1,34 +1,4 @@
-import Observable from './Observable';
-
-export default class Subject<T> extends Observable<T> {
-  constructor() {
-    super((observer) => {
-      this.observers.add(observer);
-    });
-  }
-
-  public next(value: T) {
-    this.observers.forEach((observer) => observer.next(value));
-  }
-
-  public complete() {
-    this.observers.forEach((observer) => observer.complete?.());
-  }
-
-  public error(error: Error) {
-    this.observers.forEach((observer) => observer.error?.(error));
-  }
-
-  public asObservable(): Observable<T> {
-    return Observable.create((observer) => {
-      const subscription = this.subscribe(observer);
-
-      return () => {
-        subscription.unsubscribe();
-      };
-    });
-  }
-}
+import Subject from './Subject';
 
 describe('Subject', () => {
   it('should be possible to publish', () => {
@@ -40,9 +10,9 @@ describe('Subject', () => {
 
     subject.subscribe(observer);
 
-    subject.next('foo');
+    subject.next({ value: 'foo' });
 
-    expect(observer.next).toHaveBeenCalledWith('foo');
+    expect(observer.next).toHaveBeenCalledWith({ value: 'foo' });
   });
 
   it('should be possible to complete', () => {
@@ -70,9 +40,9 @@ describe('Subject', () => {
 
     subject.subscribe(observer);
 
-    subject.error(new Error('foo'));
+    subject.error({ error: new Error('foo') });
 
-    expect(observer.error).toHaveBeenCalledWith(new Error('foo'));
+    expect(observer.error).toHaveBeenCalledWith({ error: new Error('foo') });
   });
 
   it('should be possible to convert to observable', () => {
@@ -84,8 +54,8 @@ describe('Subject', () => {
 
     subject.asObservable().subscribe(observer);
 
-    subject.next('foo');
+    subject.next({ value: 'foo' });
 
-    expect(observer.next).toHaveBeenCalledWith('foo');
+    expect(observer.next).toHaveBeenCalledWith({ value: 'foo' });
   });
 });
