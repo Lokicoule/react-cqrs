@@ -1,7 +1,9 @@
 import { Provider } from '../shared/types';
 import { RegistryContract } from './contracts';
 import { DependencyNotFoundException } from './exceptions/DependencyNotFoundException';
-import { RegistryEntry } from './types';
+import { InvalidDependencyException } from './exceptions/InvalidDependencyException';
+import { InvalidInstanceException } from './exceptions/InvalidInstanceException';
+import { RegistryEntry, isInstance, isRegistryEntry } from './types';
 
 export class Registry implements RegistryContract {
   private dependencies: Map<string, RegistryEntry> = new Map();
@@ -17,8 +19,13 @@ export class Registry implements RegistryContract {
     if (!entry) {
       throw new DependencyNotFoundException(token);
     }
+    const instance = entry.instance;
 
-    return entry.instance as T;
+    if (!isInstance<T>(instance)) {
+      throw new InvalidInstanceException(token);
+    }
+
+    return instance;
   }
 
   public clear(): void {
@@ -36,7 +43,11 @@ export class Registry implements RegistryContract {
       return undefined;
     }
 
-    return dependency as RegistryEntry<T>;
+    if (!isRegistryEntry<T>(dependency)) {
+      throw new InvalidDependencyException(token);
+    }
+
+    return dependency;
   }
 
   private createInstance<T>(provider: Provider<T>): T {
