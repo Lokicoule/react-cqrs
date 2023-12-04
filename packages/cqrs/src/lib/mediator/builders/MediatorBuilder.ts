@@ -1,6 +1,6 @@
-import { CommandBus } from '../commands';
-import { QueryBus } from '../queries';
-import Mediator from './Mediator';
+import { CommandBus } from '../../commands';
+import { QueryBus } from '../../queries';
+import Mediator from '../Mediator';
 
 export default class MediatorBuilder {
   private commandBus: CommandBus;

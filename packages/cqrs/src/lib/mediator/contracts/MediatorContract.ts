@@ -1,5 +1,4 @@
-import { CommandContract } from '@react-cqrs/core';
-import { CommandHandler } from '../../commands';
+import { CommandContract, CommandHandler } from '../../commands';
 import { QueryContract, QueryHandler } from '../../queries';
 
 export default interface MediatorContract {
