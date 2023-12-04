@@ -6,7 +6,8 @@ export {
 export {
   default as QueryHandlerContract,
   QueryHandlerFn,
-  QueryHandlerEntity,
+  QueryHandler,
   isQueryHandlerContract,
   isQueryHandlerFn,
+  isQueryHandler,
 } from './QueryHandlerContract';

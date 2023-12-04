@@ -1,5 +1,5 @@
 import CommandBus from './CommandBus';
-import { CommandHandlerEntity } from './contracts';
+import { CommandHandler } from './contracts';
 import {
   CommandAlreadyRegisteredException,
   CommandNotFoundException,
@@ -70,7 +70,7 @@ describe('commandBus', () => {
     it('should throw an exception if the command handler is invalid', () => {
       const command = new Command();
 
-      commandBus.register(command, {} as unknown as CommandHandlerEntity);
+      commandBus.register(command, {} as unknown as CommandHandler);
 
       expect(() => commandBus.execute(command)).toThrow(
         UnsupportedCommandHandlerException

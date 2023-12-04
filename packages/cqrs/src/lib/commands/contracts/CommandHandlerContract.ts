@@ -17,22 +17,26 @@ export type CommandHandlerFn<
   TCommand extends CommandContract = CommandContract
 > = <TReturn>(command: TCommand) => TReturn;
 
-export type CommandHandlerEntity<
-  TCommand extends CommandContract = CommandContract
-> = CommandHandlerFn<TCommand> | CommandHandlerContract<TCommand>;
+export type CommandHandler<TCommand extends CommandContract = CommandContract> =
+  CommandHandlerFn<TCommand> | CommandHandlerContract<TCommand>;
 
 export function isCommandHandlerContract<
   TCommand extends CommandContract = CommandContract
->(
-  handler: CommandHandlerEntity<TCommand>
-): handler is CommandHandlerRuntime<TCommand> {
+>(handler: unknown): handler is CommandHandlerRuntime<TCommand> {
   return !!(handler as CommandHandlerContract<TCommand>).execute;
 }
 
 export function isCommandHandlerFn<
   TCommand extends CommandContract = CommandContract
->(
-  handler: CommandHandlerEntity<TCommand>
-): handler is CommandHandlerFn<TCommand> {
+>(handler: unknown): handler is CommandHandlerFn<TCommand> {
   return typeof handler === 'function';
+}
+
+export function isCommandHandler<
+  TCommand extends CommandContract = CommandContract
+>(handler: unknown): handler is CommandHandler<TCommand> {
+  return (
+    isCommandHandlerFn<TCommand>(handler) ||
+    isCommandHandlerContract<TCommand>(handler)
+  );
 }

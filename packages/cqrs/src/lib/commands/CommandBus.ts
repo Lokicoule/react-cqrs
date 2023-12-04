@@ -3,7 +3,7 @@ import { ObservableBusOptions } from '../observables/ObservableBus';
 import { Callback } from '../types';
 import {
   CommandContract,
-  CommandHandlerEntity,
+  CommandHandler,
   CommandRegistryContract,
   isCommandHandlerContract,
   isCommandHandlerFn,
@@ -16,7 +16,7 @@ export default class CommandBus extends ObservableBus<CommandContract> {
     options?: ObservableBusOptions,
     private readonly registry: CommandRegistryContract<
       CommandContract,
-      CommandHandlerEntity
+      CommandHandler
     > = new CommandRegistry()
   ) {
     super(options);
@@ -24,7 +24,7 @@ export default class CommandBus extends ObservableBus<CommandContract> {
 
   public register<TCommand extends CommandContract>(
     command: TCommand,
-    handler: CommandHandlerEntity
+    handler: CommandHandler
   ): Callback {
     return this.registry.register(command, { handler });
   }

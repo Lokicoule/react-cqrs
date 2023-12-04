@@ -1,18 +1,18 @@
 import { Callback } from '../../types';
-import CommandRegistry from './CommandRegistry';
 import { CommandRegistryEntry } from '../contracts';
 import {
   CommandAlreadyRegisteredException,
   CommandNotFoundException,
 } from '../exceptions';
 import { BaseCommand } from '../models';
+import CommandRegistry from './CommandRegistry';
 
 class TestCommand extends BaseCommand {
   public static override readonly commandName = 'test';
 }
 
 describe('CommandRegistry', () => {
-  let registry: CommandRegistry; // We don't use the contract here because we want to use base registry methods to simplify the tests
+  let registry: CommandRegistry;
   let handler: jest.Mock;
   let command: TestCommand = new TestCommand(); // Fix: We need to instantiate the command here because when using it.each, the command is not yet instantiated and the commandName is undefined.
   let entry: CommandRegistryEntry;

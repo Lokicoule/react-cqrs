@@ -1,5 +1,5 @@
 import QueryBus from './QueryBus';
-import { QueryHandlerEntity } from './contracts';
+import { QueryHandler } from './contracts';
 import {
   QueryAlreadyRegisteredException,
   QueryNotFoundException,
@@ -66,7 +66,7 @@ describe('queryBus', () => {
     it('should throw an exception if the query handler is invalid', () => {
       const query = new Query();
 
-      queryBus.register(query, {} as unknown as QueryHandlerEntity);
+      queryBus.register(query, {} as unknown as QueryHandler);
 
       expect(() => queryBus.execute(query)).toThrow(
         UnsupportedQueryHandlerException

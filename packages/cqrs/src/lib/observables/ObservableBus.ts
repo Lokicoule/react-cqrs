@@ -15,7 +15,7 @@ export default abstract class ObservableBus<T = unknown> {
     return this.publisher.subscribe(observer);
   }
 
-  public publish<TResult>(command: T): TResult | undefined {
+  public publish<TResult>(command: T): TResult | void {
     try {
       const result = this.execute<TResult>(command);
       this.publisher.next({ value: result, param: command });
@@ -31,8 +31,6 @@ export default abstract class ObservableBus<T = unknown> {
     } finally {
       this.publisher.complete({ param: command });
     }
-
-    return undefined;
   }
 
   protected abstract execute<TResult>(command: T): TResult;

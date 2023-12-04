@@ -3,7 +3,7 @@ import { ObservableBusOptions } from '../observables/ObservableBus';
 import { Callback } from '../types';
 import {
   QueryContract,
-  QueryHandlerEntity,
+  QueryHandler,
   QueryRegistryContract,
   isQueryHandlerContract,
   isQueryHandlerFn,
@@ -16,7 +16,7 @@ export default class QueryBus extends ObservableBus<QueryContract> {
     options?: ObservableBusOptions,
     private readonly registry: QueryRegistryContract<
       QueryContract,
-      QueryHandlerEntity
+      QueryHandler
     > = new QueryRegistry()
   ) {
     super(options);
@@ -24,7 +24,7 @@ export default class QueryBus extends ObservableBus<QueryContract> {
 
   public register<TQuery extends QueryContract>(
     query: TQuery,
-    handler: QueryHandlerEntity
+    handler: QueryHandler
   ): Callback {
     return this.registry.register(query, { handler });
   }

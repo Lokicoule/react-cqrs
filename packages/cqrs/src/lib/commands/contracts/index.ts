@@ -9,7 +9,8 @@ export {
 export {
   default as CommandHandlerContract,
   CommandHandlerFn,
-  CommandHandlerEntity,
+  CommandHandler,
   isCommandHandlerContract,
   isCommandHandlerFn,
+  isCommandHandler,
 } from './CommandHandlerContract';
